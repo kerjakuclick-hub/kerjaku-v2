@@ -2,9 +2,9 @@ import { getTugasKsatria } from '@/features/order/services/ksatria-queries'
 import { SKEMA_KEUANGAN } from '@/features/finance/services/financeEngine'
 import { createClient } from '@/lib/supabase/server'
 import { MapPin, Clock, Calendar, Wallet, ClipboardList, Phone } from 'lucide-react'
-import { SelesaikanTugasBtn } from '@/features/order/components/SelesaikanTugasBtn' // IMPORT KOMPONEN BARU
+import { SelesaikanTugasBtn } from '@/features/order/components/SelesaikanTugasBtn'
+import { WithdrawalForm } from '@/features/finance/components/WithdrawalForm' // IMPORT KOMPONEN BARU
 
-// Paksa Matikan Cache agar data tugas dan saldo selalu real-time
 export const dynamic = 'force-dynamic'
 
 export default async function KsatriaDashboard() {
@@ -32,12 +32,17 @@ export default async function KsatriaDashboard() {
              <p className="text-3xl font-black text-slate-800 mt-1">{tugasAktif.length}</p>
            </div>
          </div>
-         <div className="p-6 bg-slate-900 rounded-3xl shadow-sm border border-slate-800 flex items-center gap-6 text-white relative overflow-hidden">
+         
+         {/* KOTAK SALDO DIPERBARUI DENGAN KOMPONEN TARIK TUNAI */}
+         <div className="p-6 bg-slate-900 rounded-3xl shadow-sm border border-slate-800 flex items-start gap-6 text-white relative overflow-hidden">
            <div className="absolute -right-4 -top-4 opacity-10"><Wallet size={100} /></div>
-           <div className="p-4 bg-blue-500/20 text-blue-400 rounded-2xl relative z-10"><Wallet size={32} /></div>
-           <div className="relative z-10">
+           <div className="p-4 bg-blue-500/20 text-blue-400 rounded-2xl relative z-10 shrink-0"><Wallet size={32} /></div>
+           <div className="relative z-10 w-full">
              <p className="text-xs font-bold text-slate-400 uppercase tracking-widest">Saldo Penghasilan</p>
              <p className="text-3xl font-black mt-1 text-emerald-400">Rp {saldoSaatIni.toLocaleString('id-ID')}</p>
+             
+             {/* SUNTIKAN FORMULIR TARIK TUNAI */}
+             <WithdrawalForm currentBalance={saldoSaatIni} />
            </div>
          </div>
       </div>
@@ -53,24 +58,15 @@ export default async function KsatriaDashboard() {
           tugasAktif.map((tugas) => (
             <div key={tugas.id} className="bg-white border border-slate-200 p-6 rounded-3xl shadow-sm hover:shadow-md transition-all relative overflow-hidden">
                <div className="absolute top-0 left-0 w-2 h-full bg-orange-500"></div>
-               
                <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-4 pb-4 border-b border-slate-100">
                   <div>
-                    <span className="inline-block px-3 py-1 bg-orange-100 text-orange-700 text-xs font-bold rounded-full mb-2">
-                      TUGAS BARU
-                    </span>
-                    <h3 className="text-lg font-black text-slate-800">
-                      {SKEMA_KEUANGAN[tugas.service_id]?.nama || tugas.service_id}
-                    </h3>
+                    <span className="inline-block px-3 py-1 bg-orange-100 text-orange-700 text-xs font-bold rounded-full mb-2">TUGAS BARU</span>
+                    <h3 className="text-lg font-black text-slate-800">{SKEMA_KEUANGAN[tugas.service_id]?.nama || tugas.service_id}</h3>
                   </div>
                   <div className="text-right">
                     <p className="text-xs font-bold text-slate-400 uppercase tracking-widest">Target Kedatangan</p>
-                    <p className="font-bold text-slate-800 flex items-center gap-1 justify-end">
-                      <Calendar size={14}/> {tugas.schedule_date}
-                    </p>
-                    <p className="text-sm font-bold text-blue-600 flex items-center gap-1 justify-end">
-                      <Clock size={14}/> {tugas.schedule_slot}
-                    </p>
+                    <p className="font-bold text-slate-800 flex items-center gap-1 justify-end"><Calendar size={14}/> {tugas.schedule_date}</p>
+                    <p className="text-sm font-bold text-blue-600 flex items-center gap-1 justify-end"><Clock size={14}/> {tugas.schedule_slot}</p>
                   </div>
                </div>
 
@@ -93,13 +89,11 @@ export default async function KsatriaDashboard() {
                   <div className="space-y-2 md:border-l border-slate-100 md:pl-4">
                     <p className="text-xs font-bold text-slate-400 uppercase tracking-widest">Alamat Lokasi</p>
                     <p className="text-sm font-medium text-slate-700 flex items-start gap-2">
-                       <MapPin size={16} className="text-red-500 shrink-0 mt-0.5" />
-                       {tugas.address_detail}
+                       <MapPin size={16} className="text-red-500 shrink-0 mt-0.5" /> {tugas.address_detail}
                     </p>
                   </div>
                </div>
 
-               {/* TOMBOL BERBASIS CLIENT COMPONENT */}
                <div className="mt-6 pt-4 border-t border-slate-100 flex justify-end">
                   <SelesaikanTugasBtn orderId={tugas.id} />
                </div>

@@ -14,3 +14,16 @@ export async function getBukuKas() {
   }
   return data
 }
+
+// FUNGSI BARU: Tarik data antrean penarikan dana
+export async function getPendingWithdrawals() {
+  const supabase = await createClient()
+  const { data, error } = await supabase
+    .from('withdrawals')
+    .select('*, ksatria:profiles(full_name, phone_number)')
+    .eq('status', 'PENDING')
+    .order('created_at', { ascending: true })
+  
+  if (error) return []
+  return data
+}
