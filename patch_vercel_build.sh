@@ -1,10 +1,14 @@
+#!/bin/bash
+echo "🔧 Memperbaiki Type Error secara paksa untuk Vercel..."
+
+cat << 'EOF' > features/order/services/order-actions.ts
 'use server'
 
 import { createClient } from '@/lib/supabase/server'
 import { getHargaLayanan } from '@/features/finance/services/financeEngine'
 import { revalidatePath } from 'next/cache'
 
-// FUNGSI 1: CREATE ORDER (Sudah Aman)
+// FUNGSI 1: CREATE ORDER (Sudah Aman karena dipanggil via Client Component manual)
 export async function createOrder(formData: FormData) {
   try {
     const supabase = await createClient()
@@ -37,8 +41,7 @@ export async function createOrder(formData: FormData) {
   }
 }
 
-// FUNGSI 2: DISPATCH KSATRIA (DIPERBAIKI UNTUK VERCEL BUILD)
-// Menghilangkan return value dan menggantinya menjadi Promise<void>
+// FUNGSI 2: DISPATCH KSATRIA (WAJIB PROMISE<VOID> UNTUK VERCEL)
 export async function assignKsatria(formData: FormData): Promise<void> {
   try {
     const supabase = await createClient()
@@ -47,7 +50,7 @@ export async function assignKsatria(formData: FormData): Promise<void> {
 
     if (!ksatriaId) {
       console.error("Ksatria harus dipilih!")
-      return
+      return // Berhenti tanpa mengembalikan nilai (void)
     }
 
     const { error } = await supabase
@@ -60,7 +63,7 @@ export async function assignKsatria(formData: FormData): Promise<void> {
 
     if (error) {
       console.error("Error dispatch:", error.message)
-      return
+      return // Berhenti tanpa mengembalikan nilai (void)
     }
     
     // Refresh halaman Admin agar radar terupdate
@@ -69,3 +72,6 @@ export async function assignKsatria(formData: FormData): Promise<void> {
     console.error("System error:", error.message)
   }
 }
+EOF
+
+echo "✅ PATCH SELESAI: Fungsi Dispatch sekarang mematuhi standar ketat TypeScript!"
