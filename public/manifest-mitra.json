@@ -1,0 +1,21 @@
+{
+  "name": "kerjaKU Mitra - Ksatria Lapangan",
+  "short_name": "kerjaKU Mitra",
+  "description": "Dashboard operasional khusus Ksatria kerjaKU.click",
+  "start_url": "/mitra",
+  "display": "standalone",
+  "background_color": "#0f172a",
+  "theme_color": "#2563eb",
+  "icons": [
+    {
+      "src": "/icon-mitra.png", 
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/icon-mitra.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}

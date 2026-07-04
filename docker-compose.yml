@@ -1,0 +1,34 @@
+version: '3.8'
+
+services:
+  postgres-db:
+    image: postgres:16-alpine
+    container_name: kerjaku_postgres
+    restart: always
+    environment:
+      POSTGRES_USER: devuser
+      POSTGRES_PASSWORD: devpassword
+      POSTGRES_DB: kerjaku_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - kerjaku-network
+
+  redis-cache:
+    image: redis:7-alpine
+    container_name: kerjaku_redis
+    restart: always
+    ports:
+      - "6379:6379"
+    networks:
+      - kerjaku-network
+
+networks:
+  kerjaku-network:
+    driver: bridge
+
+volumes:
+  postgres_data:
+    driver: local
