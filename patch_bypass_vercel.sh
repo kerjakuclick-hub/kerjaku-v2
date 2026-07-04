@@ -1,3 +1,7 @@
+#!/bin/bash
+echo "🚀 Memasang Taktik Bypass TypeScript pada Halaman Admin..."
+
+cat << 'EOF' > app/app/admin/page.tsx
 import { getSemuaPesanan, getDaftarKsatria } from '@/features/order/services/order-queries'
 import { assignKsatria } from '@/features/order/services/order-actions'
 import { SKEMA_KEUANGAN } from '@/features/finance/services/financeEngine'
@@ -139,3 +143,5 @@ export default async function AdminDashboard() {
     </div>
   )
 }
+EOF
+echo "✅ Taktik Bypass Berhasil Ditanam!"
