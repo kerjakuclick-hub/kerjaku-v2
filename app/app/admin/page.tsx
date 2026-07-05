@@ -161,8 +161,8 @@ export default async function AdminDashboard() {
                     <td className="p-4">{getStatusBadge(order.status)}</td>
                     <td className="p-4 text-right">
                       {order.status === 'PENDING' ? (
-                        {/* BYPASS 3: Assign Ksatria */}
                         <form action={async (formData) => { 'use server'; await assignKsatria(formData); }} className="flex flex-wrap items-center gap-2 justify-end">
+                          {/* BYPASS 3: Assign Ksatria */}
                           <input type="hidden" name="order_id" value={order.id} />
                           <select name="ksatria_id" required className="p-2.5 text-xs border border-slate-300 rounded-lg bg-white text-slate-900 shadow-sm cursor-pointer">
                             <option value="">-- Pilih Ksatria --</option>
