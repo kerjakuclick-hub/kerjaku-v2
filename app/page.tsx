@@ -3,6 +3,9 @@
 import React, { useState } from 'react';
 import { ShieldCheck, CheckCircle2, Loader2, MapPin, Car, Shirt, Sparkles, Clock, ArrowRight } from 'lucide-react';
 
+// KODE ANTI-CACHE UNTUK MEMAKSA VERCEL MENAMPILKAN DESAIN BARU
+export const dynamic = "force-dynamic";
+
 export default function LandingPageMVP() {
   const [formData, setFormData] = useState({
     nama_klien: '',
