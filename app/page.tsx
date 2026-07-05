@@ -1,162 +1,234 @@
-import React from 'react';
-import Link from 'next/link';
-import { ShieldCheck, Star, Car, Shirt, Sparkles, ArrowRight, MapPin, Building2, CheckCircle2 } from 'lucide-react';
+"use client";
 
-export const metadata = {
-  title: 'kerjaKU.click - Solusi Urusan Rumah di Palu',
-  description: 'Layanan Jasa Cuci Kendaraan, Setrika, dan Cleaning Service Profesional di Kota Palu.',
-}
+import React, { useState } from 'react';
+import { ShieldCheck, CheckCircle2, Loader2, MapPin, Car, Shirt, Sparkles, Clock, ArrowRight } from 'lucide-react';
 
-export default function LandingPage() {
+export default function LandingPageMVP() {
+  const [formData, setFormData] = useState({
+    nama_klien: '',
+    no_wa_klien: '',
+    layanan: '',
+    alamat_detail: '',
+    slot_waktu: ''
+  });
+  const [loading, setLoading] = useState(false);
+  const [status, setStatus] = useState<{ type: 'success' | 'error' | null, msg: string }>({ type: null, msg: '' });
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    setStatus({ type: null, msg: '' });
+
+    try {
+      // Mengirim data ke API Fonnte lokal Anda (V1)
+      const res = await fetch('/api/send-wa', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData),
+      });
+      const result = await res.json();
+      if (res.ok && result.success) {
+        setStatus({ type: 'success', msg: '✅ Pesanan Terkirim! Admin kerjaKU akan segera membalas WhatsApp Anda.' });
+        setFormData({ nama_klien: '', no_wa_klien: '', layanan: '', alamat_detail: '', slot_waktu: '' });
+      } else {
+        throw new Error('Gagal');
+      }
+    } catch (err) {
+      setStatus({ type: 'error', msg: '❌ Gagal mengirim pesanan. Silakan hubungi WA admin secara manual.' });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
   return (
-    <div className="min-h-screen bg-slate-50 font-sans text-slate-900 selection:bg-blue-200">
+    <div className="min-h-screen bg-slate-50 text-slate-900 font-sans selection:bg-blue-200" style={{ scrollBehavior: 'smooth' }}>
       
       {/* NAVBAR */}
-      <nav className="fixed w-full bg-white/90 backdrop-blur-md border-b border-slate-200 z-50">
-        <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
+      <nav className="bg-white border-b sticky top-0 z-50 shadow-sm">
+        <div className="max-w-6xl mx-auto px-6 h-20 flex items-center justify-between">
           <div className="flex items-center gap-1 italic">
-            <span className="text-2xl font-black text-blue-600">kerjaKU</span>
-            <span className="text-2xl font-light text-slate-400">.click</span>
+            <span className="text-2xl font-black text-blue-800">kerjaKU</span>
+            <span className="text-2xl font-light text-blue-600">.click</span>
           </div>
-          <div className="flex items-center gap-4">
-            <span className="hidden md:flex items-center gap-1 text-xs font-bold text-slate-500 bg-slate-100 px-3 py-1.5 rounded-full">
-              <MapPin size={14} className="text-red-500"/> Kota Palu
-            </span>
-            <Link href="/login" className="px-6 py-2.5 bg-blue-600 text-white font-bold rounded-full hover:bg-blue-700 transition-all shadow-md hover:shadow-lg active:scale-95">
-              Masuk / Daftar
-            </Link>
+          <div className="flex items-center gap-2">
+            <a href="#form-pesan" className="hidden md:flex bg-blue-800 text-white px-5 py-2 rounded-full font-bold text-sm hover:bg-blue-700 transition-colors">
+              Pesan Sekarang
+            </a>
+            <div className="md:hidden flex items-center gap-2 bg-slate-100 px-3 py-1.5 rounded-full border border-slate-200">
+              <MapPin size={16} className="text-red-500" />
+              <span className="text-xs font-bold text-slate-600">Palu</span>
+            </div>
           </div>
         </div>
       </nav>
 
-      {/* HERO SECTION */}
-      <main className="pt-32 pb-16 md:pt-40 md:pb-24 px-6 max-w-7xl mx-auto">
-        <div className="text-center max-w-4xl mx-auto space-y-8 animate-in fade-in slide-in-from-bottom-6 duration-700">
-          <div className="inline-flex items-center gap-2 px-4 py-2 bg-blue-50 text-blue-700 rounded-full font-bold text-sm border border-blue-100">
-            <Sparkles size={16} /> Era Baru Layanan Jasa di Palu
-          </div>
-          
-          <h1 className="text-5xl md:text-7xl font-extrabold tracking-tight text-slate-900 leading-[1.1]">
-            Urusan Rumah & Kendaraan, <br className="hidden md:block" />
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-cyan-500 italic">
-              Sekali Klik Beres!
-            </span>
+      {/* HERO SECTION (Mengikuti Desain Banner Biru) */}
+      <div className="bg-blue-800 text-white pt-16 pb-24 px-6 relative overflow-hidden">
+        {/* Ornamen Latar */}
+        <div className="absolute top-0 right-0 w-96 h-96 bg-blue-600 rounded-full blur-3xl opacity-50 -translate-y-1/2 translate-x-1/3"></div>
+        <div className="absolute bottom-0 left-0 w-64 h-64 bg-cyan-500 rounded-full blur-3xl opacity-20 translate-y-1/2 -translate-x-1/3"></div>
+        
+        <div className="max-w-4xl mx-auto text-center relative z-10 space-y-6">
+          <h1 className="text-4xl md:text-6xl font-black leading-tight tracking-tight">
+            <span className="text-yellow-400">SEKALI KLIK!</span><br/>
+            Berbagai Pekerjaan Rumah Terselesaikan.
           </h1>
-          
-          <p className="text-lg md:text-xl text-slate-600 leading-relaxed max-w-2xl mx-auto font-medium">
-            Tinggalkan cara lama. Pesan layanan Cuci Kendaraan, Setrika, dan Cleaning Service dengan Ksatria terlatih dan tersertifikasi dari Paddock kerjaKU.
+          <p className="text-lg md:text-xl text-blue-100 font-medium max-w-2xl mx-auto">
+            Platform digital terpercaya penyedia tenaga ahli profesional terverifikasi untuk menyelesaikan berbagai urusan kerapian dan kebersihan tanpa ribet.
           </p>
+          <div className="pt-4 flex justify-center gap-4">
+             <a href="#form-pesan" className="bg-yellow-400 text-slate-900 px-8 py-4 rounded-full font-black text-lg hover:bg-yellow-300 hover:scale-105 transition-all shadow-lg shadow-yellow-400/20 flex items-center gap-2">
+               Panggil Ksatria <ArrowRight size={20} />
+             </a>
+          </div>
+        </div>
+      </div>
 
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4">
-            <Link href="/login" className="w-full sm:w-auto px-8 py-4 bg-blue-600 text-white font-black text-lg rounded-full hover:bg-blue-700 transition-all shadow-xl shadow-blue-600/30 flex items-center justify-center gap-2 hover:-translate-y-1">
-              Pesan Ahlinya Sekarang <ArrowRight size={20} />
-            </Link>
+      {/* PILIHAN LAYANAN (3 KOTAK) */}
+      <div className="max-w-5xl mx-auto px-6 -mt-12 relative z-20">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          
+          <div className="bg-white p-8 rounded-3xl shadow-xl border border-slate-100 text-center hover:-translate-y-2 transition-transform duration-300">
+            <div className="w-20 h-20 mx-auto bg-blue-50 text-blue-600 rounded-full flex items-center justify-center border-4 border-blue-100 mb-4">
+              <Car size={36} />
+            </div>
+            <h3 className="text-xl font-black text-blue-800 mb-2">CUCI KENDARAAN</h3>
+            <p className="text-sm text-slate-500 font-medium">Layanan Paddock & Panggilan ke Rumah.</p>
+          </div>
+
+          <div className="bg-white p-8 rounded-3xl shadow-xl border border-slate-100 text-center hover:-translate-y-2 transition-transform duration-300">
+            <div className="w-20 h-20 mx-auto bg-blue-50 text-blue-600 rounded-full flex items-center justify-center border-4 border-blue-100 mb-4">
+              <Sparkles size={36} />
+            </div>
+            <h3 className="text-xl font-black text-blue-800 mb-2">CLEANING HOME</h3>
+            <p className="text-sm text-slate-500 font-medium">Pembersihan rumah cepat dan profesional.</p>
+          </div>
+
+          <div className="bg-white p-8 rounded-3xl shadow-xl border border-slate-100 text-center hover:-translate-y-2 transition-transform duration-300">
+            <div className="w-20 h-20 mx-auto bg-blue-50 text-blue-600 rounded-full flex items-center justify-center border-4 border-blue-100 mb-4">
+              <Shirt size={36} />
+            </div>
+            <h3 className="text-xl font-black text-blue-800 mb-2">SETRIKA PAKAIAN</h3>
+            <p className="text-sm text-slate-500 font-medium">Pakaian rapi, wangi, siap pakai.</p>
+          </div>
+
+        </div>
+      </div>
+
+      <main className="max-w-6xl mx-auto px-6 py-20 flex flex-col lg:flex-row gap-16 items-start" id="form-pesan">
+        
+        {/* KIRI: NILAI JUAL */}
+        <div className="w-full lg:w-5/12 space-y-8">
+          <div className="inline-flex items-center gap-2 px-4 py-2 bg-slate-200 text-slate-700 rounded-full font-bold text-sm tracking-widest uppercase">
+            Cara Pesan Layanan Kami
+          </div>
+          <h2 className="text-4xl font-black text-blue-900 leading-tight">
+            Duduk Manis, <br/>Biar Ksatria Kami Yang Bekerja.
+          </h2>
+          
+          <div className="space-y-6 pt-4">
+            <div className="flex gap-4 items-start">
+              <div className="bg-emerald-100 p-3 rounded-2xl text-emerald-600 mt-1"><ShieldCheck size={24} /></div>
+              <div><p className="font-bold text-lg text-slate-800">Mitra Terverifikasi</p><p className="text-sm text-slate-500 mt-1">Semua Ksatria telah melalui proses seleksi ketat untuk memastikan kualitas, keamanan, dan kepercayaan Anda.</p></div>
+            </div>
+            <div className="flex gap-4 items-start">
+              <div className="bg-blue-100 p-3 rounded-2xl text-blue-600 mt-1"><CheckCircle2 size={24} /></div>
+              <div><p className="font-bold text-lg text-slate-800">Harga Transparan</p><p className="text-sm text-slate-500 mt-1">Harga yang Anda lihat adalah harga yang dibayar. Tidak ada biaya tersembunyi.</p></div>
+            </div>
+            <div className="flex gap-4 items-start">
+              <div className="bg-amber-100 p-3 rounded-2xl text-amber-600 mt-1"><Clock size={24} /></div>
+              <div><p className="font-bold text-lg text-slate-800">Jadwal Fleksibel</p><p className="text-sm text-slate-500 mt-1">Atur jadwal layanan sesuai kebutuhan Anda hari ini atau besok.</p></div>
+            </div>
+          </div>
+        </div>
+
+        {/* KANAN: FORMULIR PEMESANAN (PRODUK BARU) */}
+        <div className="w-full lg:w-7/12">
+          <div className="bg-white p-8 md:p-10 rounded-[2.5rem] shadow-2xl border border-slate-100">
+            <h3 className="text-2xl font-black mb-2 text-blue-900">Formulir Pemesanan</h3>
+            <p className="text-slate-500 text-sm mb-8 pb-6 border-b border-slate-100">Isi data di bawah, pesanan akan langsung masuk ke WhatsApp Admin kerjaKU.</p>
+            
+            <form onSubmit={handleSubmit} className="space-y-6">
+              <div className="grid md:grid-cols-2 gap-5">
+                <div>
+                  <label className="block text-xs font-bold text-slate-500 mb-1.5 uppercase tracking-wider">Nama Lengkap</label>
+                  <input type="text" name="nama_klien" required value={formData.nama_klien} onChange={handleChange} placeholder="Cth: Ibu Dewi" className="w-full px-5 py-4 bg-slate-50 border border-slate-200 rounded-2xl outline-none focus:border-blue-600 focus:bg-white focus:ring-4 focus:ring-blue-600/10 transition-all font-medium" />
+                </div>
+                <div>
+                  <label className="block text-xs font-bold text-slate-500 mb-1.5 uppercase tracking-wider">No. WhatsApp</label>
+                  <input type="tel" name="no_wa_klien" required value={formData.no_wa_klien} onChange={handleChange} placeholder="Cth: 0812345..." className="w-full px-5 py-4 bg-slate-50 border border-slate-200 rounded-2xl outline-none focus:border-blue-600 focus:bg-white focus:ring-4 focus:ring-blue-600/10 transition-all font-medium" />
+                </div>
+              </div>
+
+              <div>
+                 <label className="block text-xs font-bold text-slate-500 mb-1.5 uppercase tracking-wider">Pilih Layanan (Sesuai Kebutuhan)</label>
+                 <select name="layanan" required value={formData.layanan} onChange={handleChange} className="w-full px-5 py-4 bg-slate-50 border border-slate-200 rounded-2xl font-bold text-blue-900 outline-none focus:border-blue-600 focus:bg-white focus:ring-4 focus:ring-blue-600/10 transition-all cursor-pointer appearance-none">
+                    <option value="">-- Ketuk untuk memilih jasa --</option>
+                    
+                    <optgroup label="🚘 CUCI KENDARAAN (Datang ke Paddock)">
+                      <option value="Cuci Motor Kecil (Paddock) - Rp 20.000">Cuci Motor Kecil - Rp 20.000</option>
+                      <option value="Cuci Motor Besar (Paddock) - Rp 25.000">Cuci Motor Besar - Rp 25.000</option>
+                      <option value="Cuci Mobil Small (Paddock) - Rp 50.000">Cuci Mobil Small - Rp 50.000</option>
+                      <option value="Cuci Mobil Medium (Paddock) - Rp 60.000">Cuci Mobil Medium - Rp 60.000</option>
+                    </optgroup>
+
+                    <optgroup label="🏡 CUCI KENDARAAN (Panggilan ke Rumah)">
+                      <option value="Cuci Motor Kecil (Panggilan) - Rp 35.000">Cuci Motor Kecil - Rp 35.000</option>
+                      <option value="Cuci Motor Besar (Panggilan) - Rp 45.000">Cuci Motor Besar - Rp 45.000</option>
+                      <option value="Cuci Mobil Mini (Panggilan) - Rp 75.000">Cuci Mobil Mini - Rp 75.000</option>
+                      <option value="Cuci Mobil Medium (Panggilan) - Rp 95.000">Cuci Mobil Medium - Rp 95.000</option>
+                    </optgroup>
+
+                    <optgroup label="👔 JASA SETRIKA PAKAIAN (Panggilan)">
+                      <option value="Setrika FAST (1.5 Jam / 25 Pcs) - Rp 65.000">Setrika FAST (1.5 Jam / 25 Pcs) - Rp 65.000</option>
+                      <option value="Setrika PRO (2.5 Jam / 40 Pcs) - Rp 95.000">Setrika PRO (2.5 Jam / 40 Pcs / Hibrid) - Rp 95.000</option>
+                    </optgroup>
+
+                    <optgroup label="✨ CLEANING HOME (Panggilan)">
+                      <option value="Cleaning FAST (1.5 Jam) - Rp 85.000">Cleaning FAST (1.5 Jam) - Rp 85.000</option>
+                      <option value="Cleaning PRO (2.5 Jam) - Rp 125.000">Cleaning PRO (2.5 Jam / Hibrid) - Rp 125.000</option>
+                    </optgroup>
+                 </select>
+              </div>
+
+              <div>
+                  <label className="block text-xs font-bold text-slate-500 mb-1.5 uppercase tracking-wider">Waktu Kedatangan</label>
+                  <select name="slot_waktu" required value={formData.slot_waktu} onChange={handleChange} className="w-full px-5 py-4 bg-slate-50 border border-slate-200 rounded-2xl font-bold text-slate-800 outline-none focus:border-blue-600 focus:bg-white focus:ring-4 focus:ring-blue-600/10 transition-all cursor-pointer appearance-none">
+                    <option value="">-- Kapan Ksatria harus datang? --</option>
+                    <option value="Hari Ini (Sesi Pagi: 08.00 - 12.00)">Hari Ini (Sesi Pagi)</option>
+                    <option value="Hari Ini (Sesi Siang: 13.00 - 17.00)">Hari Ini (Sesi Siang)</option>
+                    <option value="Besok (Bebas Atur Waktu)">Besok (Bebas Atur Waktu)</option>
+                  </select>
+              </div>
+
+              <div>
+                 <label className="block text-xs font-bold text-slate-500 mb-1.5 uppercase tracking-wider">Alamat Lengkap</label>
+                 <textarea name="alamat_detail" required value={formData.alamat_detail} onChange={handleChange} placeholder="Detail alamat Anda. (Ketik 'Datang ke Paddock' jika memilih cuci di Paddock)" rows={3} className="w-full px-5 py-4 bg-slate-50 border border-slate-200 rounded-2xl resize-none outline-none focus:border-blue-600 focus:bg-white focus:ring-4 focus:ring-blue-600/10 transition-all font-medium"></textarea>
+              </div>
+
+              <button disabled={loading} type="submit" className="w-full bg-blue-800 text-white font-black py-5 rounded-2xl shadow-[0_10px_20px_-10px_rgba(30,64,175,0.6)] hover:bg-blue-900 active:scale-95 transition-all text-lg flex justify-center items-center gap-2 disabled:bg-slate-400 disabled:shadow-none mt-4">
+                {loading ? <><Loader2 className="animate-spin" /> Memproses...</> : "Kirim Pesanan Sekarang"}
+              </button>
+
+              {status.type && (
+                <div className={`p-4 rounded-xl text-sm font-bold flex items-start gap-3 mt-4 ${status.type === 'success' ? 'bg-emerald-50 border border-emerald-200 text-emerald-700' : 'bg-red-50 border border-red-200 text-red-700'}`}>
+                  {status.type === 'success' ? <CheckCircle2 className="shrink-0 mt-0.5" /> : null}
+                  {status.msg}
+                </div>
+              )}
+            </form>
           </div>
         </div>
       </main>
-
-      {/* PILAR LAYANAN */}
-      <section className="py-20 bg-white border-y border-slate-200">
-        <div className="max-w-7xl mx-auto px-6">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl font-black text-slate-800">4 Pilar Layanan Unggulan</h2>
-            <p className="text-slate-500 mt-2 font-medium">Harga transparan, hasil maksimal.</p>
-          </div>
-          
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-            {/* Kartu 1 */}
-            <div className="p-8 rounded-3xl bg-slate-50 border border-slate-100 hover:border-blue-200 hover:shadow-xl transition-all group">
-              <div className="w-14 h-14 bg-blue-100 text-blue-600 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
-                <Building2 size={28} />
-              </div>
-              <h3 className="text-xl font-bold text-slate-800 mb-3">Cuci Paddock</h3>
-              <p className="text-slate-600 text-sm leading-relaxed mb-4">Datang langsung ke markas kami. Fasilitas lengkap, ruang tunggu nyaman, hasil cucian detail.</p>
-              <p className="text-blue-600 font-black text-lg">Mulai Rp 20rb</p>
-            </div>
-            
-            {/* Kartu 2 */}
-            <div className="p-8 rounded-3xl bg-slate-50 border border-slate-100 hover:border-blue-200 hover:shadow-xl transition-all group">
-              <div className="w-14 h-14 bg-emerald-100 text-emerald-600 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
-                <Car size={28} />
-              </div>
-              <h3 className="text-xl font-bold text-slate-800 mb-3">Cuci Panggilan</h3>
-              <p className="text-slate-600 text-sm leading-relaxed mb-4">Mager keluar rumah? Ksatria kami akan datang mencuci motor/mobil langsung di garasi Anda.</p>
-              <p className="text-emerald-600 font-black text-lg">Mulai Rp 35rb</p>
-            </div>
-
-            {/* Kartu 3 */}
-            <div className="p-8 rounded-3xl bg-slate-50 border border-slate-100 hover:border-blue-200 hover:shadow-xl transition-all group">
-              <div className="w-14 h-14 bg-orange-100 text-orange-600 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
-                <Shirt size={28} />
-              </div>
-              <h3 className="text-xl font-bold text-slate-800 mb-3">SetrikaKU</h3>
-              <p className="text-slate-600 text-sm leading-relaxed mb-4">Pakaian menumpuk? Kami setrika rapi dan wangi. Terdapat pilihan Fast (1.5 Jam) dan Pro (2.5 Jam).</p>
-              <p className="text-orange-600 font-black text-lg">Mulai Rp 65rb</p>
-            </div>
-
-            {/* Kartu 4 */}
-            <div className="p-8 rounded-3xl bg-slate-50 border border-slate-100 hover:border-blue-200 hover:shadow-xl transition-all group">
-              <div className="w-14 h-14 bg-purple-100 text-purple-600 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
-                <Sparkles size={28} />
-              </div>
-              <h3 className="text-xl font-bold text-slate-800 mb-3">CleaningKU</h3>
-              <p className="text-slate-600 text-sm leading-relaxed mb-4">Jasa pembersihan rumah profesional. Ksatria datang membawa standar bahan pembersih khusus.</p>
-              <p className="text-purple-600 font-black text-lg">Mulai Rp 85rb</p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* PADDOCK HIGHLIGHT */}
-      <section className="py-24 bg-slate-900 text-white relative overflow-hidden">
-        <div className="absolute top-0 right-0 w-[800px] h-[800px] bg-blue-600/20 rounded-full blur-3xl -translate-y-1/2 translate-x-1/3"></div>
-        <div className="max-w-7xl mx-auto px-6 relative z-10">
-          <div className="grid lg:grid-cols-2 gap-16 items-center">
-            <div className="space-y-8">
-              <h2 className="text-4xl md:text-5xl font-black leading-tight">Bukan Sekadar Aplikasi. <br/><span className="text-blue-400 italic">Kami Punya "PADDOCK".</span></h2>
-              <p className="text-slate-300 text-lg leading-relaxed">
-                Berbeda dengan aplikasi lain, kerjaKU memiliki fasilitas fisik berupa <b>PADDOCK</b> di Palu. Ini adalah pusat layanan cuci kendaraan sekaligus kawah candradimuka tempat para calon Ksatria dilatih dan disertifikasi sebelum melayani Anda.
-              </p>
-              <ul className="space-y-4">
-                <li className="flex items-center gap-3 text-slate-200"><CheckCircle2 className="text-emerald-400" /> Ksatria terverifikasi KTP & Latar Belakang</li>
-                <li className="flex items-center gap-3 text-slate-200"><CheckCircle2 className="text-emerald-400" /> Dilatih standar operasional kebersihan tinggi</li>
-                <li className="flex items-center gap-3 text-slate-200"><CheckCircle2 className="text-emerald-400" /> Kualitas bahan & kimia tersertifikasi kerjaKU</li>
-              </ul>
-              <div className="pt-4">
-                <Link href="/login" className="inline-flex px-8 py-4 bg-white text-slate-900 font-black text-lg rounded-full hover:bg-blue-50 transition-all flex-center gap-2">
-                  Buktikan Kualitas Kami Sekarang
-                </Link>
-              </div>
-            </div>
-            
-            {/* Visual Represenation */}
-            <div className="relative">
-              <div className="aspect-square bg-gradient-to-tr from-slate-800 to-slate-700 rounded-[3rem] border border-slate-600 shadow-2xl flex items-center justify-center p-8">
-                 <div className="text-center space-y-6">
-                    <ShieldCheck size={100} className="mx-auto text-blue-400 opacity-80" />
-                    <h3 className="text-2xl font-bold">100% Ksatria Terlatih</h3>
-                    <div className="flex justify-center gap-2 text-yellow-400">
-                      <Star fill="currentColor" size={24} />
-                      <Star fill="currentColor" size={24} />
-                      <Star fill="currentColor" size={24} />
-                      <Star fill="currentColor" size={24} />
-                      <Star fill="currentColor" size={24} />
-                    </div>
-                 </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
+      
       {/* FOOTER */}
-      <footer className="bg-white border-t border-slate-200 py-12">
-        <div className="max-w-7xl mx-auto px-6 text-center">
-          <h2 className="text-2xl font-black text-blue-600 italic mb-4">kerjaKU<span className="text-slate-800">.click</span></h2>
-          <p className="text-slate-500 text-sm font-medium">© 2026 PT Logic Institute - Menggerakkan Ekonomi Warga Palu.</p>
-        </div>
+      <footer className="bg-slate-900 text-slate-400 py-8 text-center text-sm">
+         <p>© 2026 PT. KERJAKU BANGUN NEGERI. All rights reserved.</p>
       </footer>
-
     </div>
   );
 }
