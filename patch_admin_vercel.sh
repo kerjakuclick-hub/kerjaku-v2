@@ -1,3 +1,7 @@
+#!/bin/bash
+echo "🔧 Memasang Ulang Taktik Bypass TypeScript di Ruang Komando..."
+
+cat << 'EOF' > app/app/admin/page.tsx
 import { getSemuaPesanan, getDaftarKsatria } from '@/features/order/services/order-queries'
 import { assignKsatria } from '@/features/order/services/order-actions'
 import { getBukuKas, getPendingWithdrawals } from '@/features/finance/services/finance-queries'
@@ -222,3 +226,6 @@ export default async function AdminDashboard() {
     </div>
   )
 }
+EOF
+
+echo "✅ SELESAI: Taktik Bypass Vercel telah dipasang ulang secara permanen!"
